@@ -2,7 +2,8 @@ package com.tree.trjson.tool;
 
 import java.util.List;
 
-public class JsonTest <T> {
+public class JsonTest1 {
+
     /**
      * name : BeJson
      * url : http://www.bejson.com
@@ -16,16 +17,8 @@ public class JsonTest <T> {
     private String url;
     private int page;
     private boolean isNonProfit;
-    private T address;
+    private AddressBean address;
     private List<LinksBean> links;
-
-    public void setAddress(T address) {
-        this.address = address;
-    }
-
-    public T getAddress() {
-        return address;
-    }
 
     public String getName() {
         return name;
@@ -59,6 +52,13 @@ public class JsonTest <T> {
         this.isNonProfit = isNonProfit;
     }
 
+    public AddressBean getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressBean address) {
+        this.address = address;
+    }
 
     public List<LinksBean> getLinks() {
         return links;

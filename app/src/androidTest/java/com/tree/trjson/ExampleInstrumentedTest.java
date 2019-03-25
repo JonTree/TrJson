@@ -5,9 +5,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.tree.trjson.tool.JsonTest;
+import com.tree.trjson.tool.JsonTest1;
 import com.tree.trjson.tool.JsonTest2;
 import com.tree.trjson.tool.TrJson;
+import com.tree.trjson.tool.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +21,10 @@ import org.junit.runner.RunWith;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.ContentValues.TAG;
 import static org.junit.Assert.*;
@@ -30,50 +36,53 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    List<String> mySuperClass;
     String data = "{\n" +
-            "    \"feeds\": [\n" +
+            "    \"name\": \"BeJson\",\n" +
+            "    \"url\": \"http://www.bejson.com\",\n" +
+            "    \"page\": 88,\n" +
+            "    \"isNonProfit\": true,\n" +
+            "    \"address\": {\n" +
+            "        \"street\": \"科技园路.\",\n" +
+            "        \"city\": \"江苏苏州\",\n" +
+            "        \"country\": \"中国\"\n" +
+            "    },\n" +
+            "    \"links\": [\n" +
             "        {\n" +
-            "            \"id\": 299080,\n" +
-            "            \"oid\": 288342,\n" +
-            "            \"category\": \"article\",\n" +
-            "            \"data\": {\n" +
-            "                \"subject\": \"视频直播：习近平马英九会面\",\n" +
-            "                \"summary\": \"两岸领导人习近平、马英九在新加坡会面\",\n" +
-            "                \"cover\": \"/Attachs/Article/288342/56a263bcab4a4c55b0bef0528ce880b6_padmini.JPG\",\n" +
-            "                \"pic\": \"\",\n" +
-            "                \"format\": \"video\",\n" +
-            "                \"changed\": \"2015-11-07 14:35:22\"\n" +
-            "            }\n" +
+            "            \"name\": \"Google\",\n" +
+            "            \"url\": \"http://www.google.com\"\n" +
             "        },\n" +
             "        {\n" +
-            "            \"id\": 299076,\n" +
-            "            \"oid\": 288340,\n" +
-            "            \"category\": \"article\",\n" +
-            "            \"data\": {\n" +
-            "                \"subject\": \"荔枝新闻3.0：不止是阅读\",\n" +
-            "                \"summary\": \"江苏广电旗下资讯类手机应用“荔枝新闻”于近期推出全新升级换代的3.0版。\",\n" +
-            "                \"cover\": \"/Attachs/Article/288340/3e8e2c397c70469f8845fad73aa38165_padmini.JPG\",\n" +
-            "                \"pic\": \"\",\n" +
-            "                \"format\": \"txt\",\n" +
-            "                \"changed\": \"2015-09-22 16:01:41\"\n" +
-            "            }\n" +
+            "            \"name\": \"Baidu\",\n" +
+            "            \"url\": \"http://www.baidu.com\"\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"name\": \"SoSo\",\n" +
+            "            \"url\": \"http://www.SoSo.com\"\n" +
             "        }\n" +
-            "    ],\n" +
-            "    \"PageIndex\": 1,\n" +
-            "    \"PageSize\": 20,\n" +
-            "    \"TotalCount\": 53521,\n" +
-            "    \"TotalPage\": 2677\n" +
-            "}\n";
+            "    ]\n" +
+            "}";
     @Test
-    public void useAppContext() throws NoSuchMethodException, IllegalAccessException, JSONException, InvocationTargetException, InstantiationException {
+    public void useAppContext() throws NoSuchMethodException, IllegalAccessException, JSONException, InvocationTargetException, InstantiationException, NoSuchFieldException, ClassNotFoundException {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.tree.trjson", appContext.getPackageName());
         TrJson trJson = new TrJson();
-        JsonTest2 j = new JsonTest2();
-        JsonTest2 jsonTest = (JsonTest2) trJson.formJson(data,j);
-        Log.e(TAG, "useAppContext: "+ jsonTest.getFeeds().get(0).getOid());
+        JsonTest<JsonTest2> j = (JsonTest<JsonTest2>) trJson.formJson(data,new TrJson.TypeToken<JsonTest<JsonTest2>>(){}.getType());
+        Type type = TrJson.class;
+        String s = ((Class) type).getName();
+        String r = type.getTypeName();
+        Log.e(TAG, "useAppContext: "+j.getAddress().getCity() );
+//        Type type = new TypeToken<JsonTest<JsonTest2>>(){}.getType();
+//        Class<? super JsonTest<JsonTest2>> a = type;
+//        new T<JsonTest<JsonTest2>>(
+//        ParameterizedType parameterizedType = j.getClass();
+//        JsonTest2 jsonTest2 = j.getAddress();
+//        Class c = (Class) jsonTest2.getClass();
+//        JsonTest1 jsonTest = (JsonTest1) trJson.formJson(data,new JsonTest1());
+        Log.e(TAG, "useAppContext:");
+//        Log.e(TAG, "useAppContext: "+ jsonTest.getFeeds().get(0).getOid());
 //        Class c = jsonTest.getClass();
 //        Field field[] = c.getDeclaredFields();
 //        for (Field field1 : field) {
@@ -84,5 +93,12 @@ public class ExampleInstrumentedTest {
 //        Log.e(TAG, "useAppContext: "+jsonTest.getPage());
 //        JSONObject jsonObject = new JSONObject(data);
 //        Log.e(TAG, "useAppContext: "+jsonObject.getJSONObject("address"));
+//        mySuperClass = new ArrayList<String>();
+//        Field field = this.getClass().getDeclaredField("mySuperClass");
+//        ParameterizedType type = (ParameterizedType) field.getGenericType();
+//        Type[] targets = type.getActualTypeArguments();
+//        for (int i = 0; i < targets.length; i++) {
+//            System.out.println(targets[i] + "\n" + targets[i].getClass());
+//        }
     }
 }
