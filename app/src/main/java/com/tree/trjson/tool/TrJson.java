@@ -1,5 +1,7 @@
 package com.tree.trjson.tool;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,25 +15,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class TrJson{
+
+    private static TrJson trJson;
     private final int FIELD = 1;
     private final int OBJECT = 2;
     private final int ARRAY = 3;
     Type parameterType;
-    public TrJson() {
 
+    Context context;
+
+
+
+    private TrJson(Context context) {
+        this.context = context;
     }
 
-    public <T> T formJson(String json, T mT) throws JSONException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public static TrJson with(Context context) {
+        if (trJson == null) {
+            synchronized (TrJson.class){
+                if (trJson == null) {
+                    trJson = new TrJson(context);
+                }
+            }
+        }
+        return trJson;
+    }
+
+    public <T> T factoryBean(String json, T mT) throws JSONException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         JSONObject jsonObject = new JSONObject(json);//总的JSONobject
         Class mClass = mT.getClass();//总的Class
         Field fields[] = mClass.getDeclaredFields();
-        mT = (T)fieldsTransfer(mT,fields,mClass,jsonObject);
+        fieldsTransfer(mT,fields,mClass,jsonObject);
         return mT;
     }
 
-    public <T> T formJson(String json, Type type) throws JSONException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public <T> T factoryBean(String json, Type type) throws JSONException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type rawType = parameterizedType.getRawType();
         parameterType = parameterizedType.getActualTypeArguments()[0];
@@ -39,22 +58,21 @@ public class TrJson{
         T mT = (T) Class.forName(((Class)rawType).getName()).newInstance();
         Class mClass = (Class)rawType;//总的Class
         Field fields[] = mClass.getDeclaredFields();
-        mT = (T)fieldsTransfer(mT,fields,mClass,jsonObject);
+        fieldsTransfer(mT,fields,mClass,jsonObject);
         return mT;
     }
 
     //遍历属性数组通过属性类型来调用函数
-    private Object fieldsTransfer(Object mObject, Field fields[] , Class mClass, JSONObject jsonObject) throws JSONException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+    private void fieldsTransfer(Object mObject, Field fields[] , Class mClass, JSONObject jsonObject) throws JSONException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
         for (Field f : fields) {
             if (judge(f.getName(),jsonObject) == FIELD){
-                mObject = handleField(mObject,f,mClass,jsonObject);
+                handleField(mObject,f,mClass,jsonObject);
             }else if (judge(f.getName(),jsonObject) == OBJECT){
-                mObject = handleObject(mObject,f,mClass,jsonObject);
+                handleObject(mObject,f,mClass,jsonObject);
             }else if (judge(f.getName(),jsonObject) == ARRAY){
-                mObject = handleArray(mObject,f,mClass,jsonObject);
+                handleArray(mObject,f,mClass,jsonObject);
             }
         }
-        return mObject;
     }
 
     //通过属性名判断是否为一个对象
@@ -76,7 +94,7 @@ public class TrJson{
     int i = 0;
 
     //处理属性
-    private Object handleField(Object mObject,Field mF,Class mClass,JSONObject jsonObject) throws NoSuchMethodException, JSONException, InvocationTargetException, IllegalAccessException {
+    private void handleField(Object mObject,Field mF,Class mClass,JSONObject jsonObject) throws NoSuchMethodException, JSONException, InvocationTargetException, IllegalAccessException {
         Method setMethod = mClass.getDeclaredMethod(findSetMethodName(mF.getName()),mF.getType());
 //        Class<?> parameterType = (setMethod.getParameterTypes())[0];
             if ("string".equalsIgnoreCase(mF.getType().getSimpleName())) {
@@ -89,25 +107,22 @@ public class TrJson{
             } else if ("boolean".equalsIgnoreCase(mF.getType().getSimpleName())) {
                 setMethod.invoke(mObject, Boolean.parseBoolean(jsonObject.get(mF.getName()).toString()));
             }
-            return mObject;
     }
 
     int j = 0;
     //处理对象
-    private Object handleObject(Object mObject, Field mF, Class mClass, JSONObject mJsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException, InstantiationException, ClassNotFoundException {
+    private void handleObject(Object mObject, Field mF, Class mClass, JSONObject mJsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException, InstantiationException, ClassNotFoundException {
         Method setMethod = mClass.getDeclaredMethod(findSetMethodName(mF.getName()), mF.getType());
         JSONObject jsonObject = mJsonObject.getJSONObject(mF.getName());//获得当前对象的JSONobject
         Object object = (Object)(mF.getType() == Object.class?Class.forName(((Class)parameterType).getName()).newInstance():mF.getType().newInstance());//获得当前的对象
         Class nClass = object.getClass()==Class.class?(Class) parameterType:object.getClass();//获得当前的对象的class对象
         Field fields[] = nClass.getDeclaredFields();//获得当前的类中的属性
-        object = (Object) fieldsTransfer(object,fields,nClass,jsonObject);//进行处理
+        fieldsTransfer(object,fields,nClass,jsonObject);//进行处理
         setMethod.invoke(mObject,object);//设置当前对象至外部对象
-        return mObject;
     }
 
-    int k = 0;
     //处理数组
-    private Object handleArray(Object mObject, Field mF, Class mClass, JSONObject mJsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException, InstantiationException, ClassNotFoundException {
+    private void handleArray(Object mObject, Field mF, Class mClass, JSONObject mJsonObject) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException, InstantiationException, ClassNotFoundException {
         Method setMethod = mClass.getDeclaredMethod(findSetMethodName(mF.getName()), mF.getType());
         JSONArray jsonArray = mJsonObject.getJSONArray(mF.getName());//获取当前的JsonArray
         Type genericType = mF.getGenericType();//获得属性类型
@@ -122,11 +137,10 @@ public class TrJson{
             assert genericClazz != null;
             Object object = genericClazz.newInstance();
             Field fields[] = genericClazz.getDeclaredFields();
-            object = fieldsTransfer(object,fields,genericClazz,jsonObject);
+            fieldsTransfer(object,fields,genericClazz,jsonObject);
             beans.add(object);
         }
         setMethod.invoke(mObject,beans);
-        return mObject;
     }
 
     //通过属性名来找到设置方法名

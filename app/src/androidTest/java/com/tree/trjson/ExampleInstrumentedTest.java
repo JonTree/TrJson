@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.tree.trjson.tool.JsonTest;
 import com.tree.trjson.tool.JsonTest1;
 import com.tree.trjson.tool.JsonTest2;
+import com.tree.trjson.tool.NewTest;
 import com.tree.trjson.tool.TrJson;
 import com.tree.trjson.tool.TypeToken;
 
@@ -38,29 +39,11 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     List<String> mySuperClass;
     String data = "{\n" +
-            "    \"name\": \"BeJson\",\n" +
-            "    \"url\": \"http://www.bejson.com\",\n" +
-            "    \"page\": 88,\n" +
-            "    \"isNonProfit\": true,\n" +
-            "    \"address\": {\n" +
-            "        \"street\": \"科技园路.\",\n" +
-            "        \"city\": \"江苏苏州\",\n" +
-            "        \"country\": \"中国\"\n" +
-            "    },\n" +
-            "    \"links\": [\n" +
-            "        {\n" +
-            "            \"name\": \"Google\",\n" +
-            "            \"url\": \"http://www.google.com\"\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"name\": \"Baidu\",\n" +
-            "            \"url\": \"http://www.baidu.com\"\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"name\": \"SoSo\",\n" +
-            "            \"url\": \"http://www.SoSo.com\"\n" +
-            "        }\n" +
-            "    ]\n" +
+            "\"employees\": [\n" +
+            "{ \"firstName\":\"Bill\" , \"lastName\":\"Gates\" },\n" +
+            "{ \"firstName\":\"George\" , \"lastName\":\"Bush\" },\n" +
+            "{ \"firstName\":\"Thomas\" , \"lastName\":\"Carter\" }\n" +
+            "]\n" +
             "}";
     @Test
     public void useAppContext() throws NoSuchMethodException, IllegalAccessException, JSONException, InvocationTargetException, InstantiationException, NoSuchFieldException, ClassNotFoundException {
@@ -68,12 +51,9 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.tree.trjson", appContext.getPackageName());
-        TrJson trJson = new TrJson();
-        JsonTest<JsonTest2> j = (JsonTest<JsonTest2>) trJson.formJson(data,new TrJson.TypeToken<JsonTest<JsonTest2>>(){}.getType());
-        Type type = TrJson.class;
-        String s = ((Class) type).getName();
-        String r = type.getTypeName();
-        Log.e(TAG, "useAppContext: "+j.getAddress().getCity() );
+        NewTest n = new NewTest();
+//        TrJson.with().factoryBean(data, n);
+        Log.d(TAG, "useAppContext: casccadscasdcasddcad"+ n.getEmployees().get(1).getFirstName());
 //        Type type = new TypeToken<JsonTest<JsonTest2>>(){}.getType();
 //        Class<? super JsonTest<JsonTest2>> a = type;
 //        new T<JsonTest<JsonTest2>>(
