@@ -10,6 +10,7 @@ public class TypeToken<T> {
     protected TypeToken() {
         this.type = getSuperclassTypeParameter(getClass());
     }
+
     private static Type getSuperclassTypeParameter(Class<?> subclass) {
         Type superclass = subclass.getGenericSuperclass();
         if (superclass instanceof Class) {

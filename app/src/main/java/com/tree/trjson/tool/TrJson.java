@@ -27,20 +27,19 @@ public class TrJson{
 
 
 
-    private TrJson(Context context) {
-        this.context = context;
-    }
+    private TrJson() {}
 
-    public static TrJson with(Context context) {
+
+    public static TrJson getTrJson() {
         if (trJson == null) {
             synchronized (TrJson.class){
                 if (trJson == null) {
-                    trJson = new TrJson(context);
+                    trJson = new TrJson();
                 }
             }
         }
         return trJson;
-    }
+}
 
     public <T> T factoryBean(String json, T mT) throws JSONException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         JSONObject jsonObject = new JSONObject(json);//总的JSONobject
@@ -133,7 +132,7 @@ public class TrJson{
         }
         List<Object> beans = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+            JSONObject jsonObject = new JSONObject(jsonArray.get(i).toString());
             assert genericClazz != null;
             Object object = genericClazz.newInstance();
             Field fields[] = genericClazz.getDeclaredFields();
@@ -158,16 +157,15 @@ public class TrJson{
         }
      return word;
     }
-
     public static class TypeToken<T> {
-        final Type type;
+        private final Type type;
 
         @SuppressWarnings("unchecked")
         protected TypeToken() {
             this.type = getSuperclassTypeParameter(getClass());
         }
 
-        Type getSuperclassTypeParameter(Class<?> subclass) {
+        private static Type getSuperclassTypeParameter(Class<?> subclass) {
             Type superclass = subclass.getGenericSuperclass();
             if (superclass instanceof Class) {
                 throw new RuntimeException("Missing type parameter.");
@@ -176,7 +174,6 @@ public class TrJson{
             assert parameterized != null;
             return parameterized.getActualTypeArguments()[0];
         }
-
         public final Type getType() {
             return type;
         }

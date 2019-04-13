@@ -13,6 +13,8 @@ public class JsonTest1 {
      * links : [{"name":"Google","url":"http://www.google.com"},{"name":"Baidu","url":"http://www.baidu.com"},{"name":"SoSo","url":"http://www.SoSo.com"}]
      */
 
+
+
     private String name;
     private String url;
     private int page;

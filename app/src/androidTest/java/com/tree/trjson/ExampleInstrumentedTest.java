@@ -45,16 +45,42 @@ public class ExampleInstrumentedTest {
             "{ \"firstName\":\"Thomas\" , \"lastName\":\"Carter\" }\n" +
             "]\n" +
             "}";
+    String da = "{\n" +
+            "    \"name\": \"BeJson\",\n" +
+            "    \"url\": \"http://www.bejson.com\",\n" +
+            "    \"page\": 88,\n" +
+            "    \"isNonProfit\": true,\n" +
+            "    \"address\": {\n" +
+            "        \"street\": \"科技园路.\",\n" +
+            "        \"city\": \"江苏苏州\",\n" +
+            "        \"country\": \"中国\"\n" +
+            "    },\n" +
+            "    \"links\": [\n" +
+            "        {\n" +
+            "            \"name\": \"Google\",\n" +
+            "            \"url\": \"http://www.google.com\"\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"name\": \"Baidu\",\n" +
+            "            \"url\": \"http://www.baidu.com\"\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"name\": \"SoSo\",\n" +
+            "            \"url\": \"http://www.SoSo.com\"\n" +
+            "        }\n" +
+            "    ]\n" +
+            "}";
     @Test
     public void useAppContext() throws NoSuchMethodException, IllegalAccessException, JSONException, InvocationTargetException, InstantiationException, NoSuchFieldException, ClassNotFoundException {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.tree.trjson", appContext.getPackageName());
-        NewTest n = new NewTest();
-//        TrJson.with().factoryBean(data, n);
-        Log.d(TAG, "useAppContext: casccadscasdcasddcad"+ n.getEmployees().get(1).getFirstName());
-//        Type type = new TypeToken<JsonTest<JsonTest2>>(){}.getType();
+//        NewTest n = new NewTest();
+        JsonTest<JsonTest2> jt = TrJson.getTrJson().factoryBean(da,  new TrJson.TypeToken<JsonTest<JsonTest2>>(){}.getType());
+        Log.d(TAG, "useAppContext: "+jt.getName());
+//        Log.d(TAG, "useAppContext: casccadscasdcasddcad"+ n.getEmployees().get(1).getFirstName());
+
 //        Class<? super JsonTest<JsonTest2>> a = type;
 //        new T<JsonTest<JsonTest2>>(
 //        ParameterizedType parameterizedType = j.getClass();
